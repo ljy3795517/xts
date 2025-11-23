@@ -1,82 +1,71 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-
 <meta charset="UTF-8" />
-<title>诗词翻牌游戏 - 静夜思</title>
+<title>诗词翻牌游戏</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="静夜思翻牌游戏" />
+<meta name="apple-mobile-web-app-title" content="诗词翻牌游戏" />
 <meta name="theme-color" content="#eef2f3" />
 
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="manifest" href="manifest.json" />
 
-
-
 <style>
 body {
-margin: 0;
-padding: 0;
-background: #eef2f3;
-font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-display: flex;
-flex-direction: column;
-align-items: center;
+  margin: 0;
+  padding: 0;
+  background: #eef2f3;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
 .top-area {
-text-align: center;
-padding: 15px 0 10px 0;
+  text-align: center;
+  padding: 15px 0 10px 0;
 }
-
 .title {
-font-size: 36px;
-font-weight: bold;
+  font-size: 36px;
+  font-weight: bold;
 }
 
-/* 基础炮按钮 */
 .icon-btn {
-width: 80px;
-height: 80px;
-padding: 0;
-border: none;
-cursor: pointer;
-background: url("cannon.png") no-repeat center center / cover;
-border-radius: 50%;
-transition: transform 0.25s ease;
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: url("cannon.png") no-repeat center center / cover;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
 }
+.row-btn:hover { transform: rotate(40deg) scale(1.08); }
+.col-btn:hover { transform: rotate(130deg) scale(1.08); }
 
-/* 行按钮鼠标经过 → 顺时针旋转 40° */
-.row-btn:hover {
-transform: rotate(40deg) scale(1.08);
-}
-
-/* 列按钮鼠标经过 → 顺时针旋转 130° */
-.col-btn:hover {
-transform: rotate(130deg) scale(1.08);
-}
-
-/* 还原按钮与朗读按钮样式 */
+/* === 三个按钮整体上移：top -100px === */
 .action-buttons {
-position: absolute;
-top: -60px;
-left: -110px;
-display: flex;
-flex-direction: column;
-gap: 8px;
+  position: absolute;
+  top: -100px;   /* ← 按你的要求上移两行 */
+  left: -110px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-#resetBtn, #readBtn {
-width: 90px;
-height: 40px;
-border-radius: 8px;
-border: none;
-cursor: pointer;
-font-size: 16px;
-color: white;
+/* 三个按钮（主页 / 还原 / 朗读） */
+#homeBtn, #resetBtn, #readBtn {
+  width: 90px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
 }
+#homeBtn { background: #16a085; }
+#homeBtn:hover { background: #12806c; }
 
 #resetBtn { background: #e67e22; }
 #resetBtn:hover { background: #cf6f1d; }
@@ -85,234 +74,224 @@ color: white;
 #readBtn:hover { background: #357ac8; }
 
 .game-area {
-display: flex;
-flex-direction: row;
-align-items: flex-start;
-margin-top: 30px;
-width: 100%;
-justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-top: 30px;
+  width: 100%;
+  justify-content: center;
 }
 
-/* 行按钮区增加上方两个空行 */
 .row-buttons {
-display: grid;
-grid-template-rows: repeat(4, 1fr);
-margin-right: 10px;
-height: 55vh;
-align-items: center;
-margin-top: 40px; /* 两个空行的近似高度 */
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  margin-right: 10px;
+  height: 55vh;
+  align-items: center;
+  margin-top: 40px;
 }
 
 .card-wrapper {
-position: relative;
-width: 80vw;
-max-width: 1200px;
+  position: relative;
+  width: 80vw;
+  max-width: 1200px;
 }
 
 .card-grid {
-display: grid;
-grid-template-columns: repeat(5, 1fr);
-grid-template-rows: repeat(4, 1fr);
-gap: 10px;
-width: 100%;
-height: 55vh;
-position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+  height: 55vh;
+  position: relative;
 }
 
 .card {
-display: flex;
-justify-content: center;
-align-items: center;
-font-size: 36px;
-font-weight: bold;
-border-radius: 12px;
-cursor: pointer;
-transition: 0.25s;
-background: #fff7cc;
-color: #003f8a; /* 深蓝色字体（或亮蓝） */
-box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s;
+  background: #fff7cc;
+  color: #003f8a;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  user-select: none;
 }
 
 .card.back {
-background: #4a90e2;
-color: transparent;
+  background: #4a90e2;
+  color: transparent;
 }
 
 .col-buttons {
-position: absolute;
-top: -60px;
-left: 0;
-width: 100%;
-display: flex;
-justify-content: space-around;
-padding: 0 10px;
+  position: absolute;
+  top: -60px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 10px;
 }
 
-/* 小屏设备微调 */
 @media (max-width: 720px) {
-.icon-btn { width: 60px; height: 60px; }
-#resetBtn, #readBtn { width: 76px; height: 36px; font-size: 14px; }
-.card { font-size: 28px; }
+  .icon-btn { width: 60px; height: 60px; }
+  #homeBtn, #resetBtn, #readBtn { width: 76px; height: 36px; font-size: 14px; }
+  .card { font-size: 28px; }
 }
 </style>
 </head>
 <body>
 
 <div class="top-area">
-<div>
-<span class="title">静夜思</span>
-<span style="font-size:22px;color:#555;margin-left:12px;">唐 · 李白</span>
-</div>
+  <div>
+    <span class="title" id="poemTitle"></span>
+    <span style="font-size: 22px; color: #555; margin-left: 12px;" id="poemMeta"></span>
+  </div>
 </div>
 
-<!-- 卡片区上方两个空行 -->
 <br><br>
 
 <div class="game-area">
+  <div class="row-buttons">
+    <button class="icon-btn row-btn" onclick="flipRow(0)" title="翻第1行"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(1)" title="翻第2行"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(2)" title="翻第3行"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(3)" title="翻第4行"></button>
+  </div>
 
-<!-- 行按钮（用 row-btn 类） -->
-<div class="row-buttons" aria-label="行按钮">
-<button class="icon-btn row-btn" onclick="flipRow(0)" title="翻第1行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(1)" title="翻第2行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(2)" title="翻第3行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(3)" title="翻第4行"></button>
-</div>
+  <div class="card-wrapper">
 
-<div class="card-wrapper" aria-live="polite">
+    <!-- 三个按钮（主页 / 还原 / 朗读） -->
+    <div class="action-buttons">
+      <button id="homeBtn">主页</button>
+      <button id="resetBtn">还原</button>
+      <button id="readBtn">朗读</button>
+    </div>
 
-<!-- 还原 & 朗读 按钮 -->
-<div class="action-buttons" role="toolbar" aria-label="操作按钮">
-<button id="resetBtn" title="全部还原">还原</button>
-<button id="readBtn" title="朗读当前卡片状态">朗读</button>
-</div>
+    <br><br>
 
-<!-- 列按钮（用 col-btn 类） -->
-<br><br>
-<div class="col-buttons" aria-label="列按钮">
-<button class="icon-btn col-btn" onclick="flipCol(0)" title="翻第1列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(1)" title="翻第2列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(2)" title="翻第3列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(3)" title="翻第4列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(4)" title="翻第5列"></button>
-</div>
+    <div class="col-buttons">
+      <button class="icon-btn col-btn" onclick="flipCol(0)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(1)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(2)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(3)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(4)"></button>
+    </div>
 
-<div class="card-grid" id="cardGrid" role="grid" aria-label="诗词卡片区"></div>
-</div>
+    <div class="card-grid" id="cardGrid"></div>
+  </div>
 </div>
 
 <script>
-/* 诗词字数组（20 字） */
-const poemText = [
-"床","前","明","月","光",
-"疑","是","地","上","霜",
-"举","头","望","明","月",
-"低","头","思","故","乡"
-];
+// ====== 读取 URL 参数 ======
+const urlParams = new URLSearchParams(window.location.search);
+let f = urlParams.get("f") || "1";
+let dataFile = f + ".js";
 
-const grid = document.getElementById("cardGrid");
-let cards = [];
+// ====== 动态加载诗词数据 ======
+let script = document.createElement("script");
+script.src = dataFile;
+document.body.appendChild(script);
 
-/* 创建卡片并加入 DOM */
-for (let i = 0; i < 20; i++) {
-const div = document.createElement("div");
-div.className = "card";
-div.textContent = poemText[i];
+script.onload = () => initGame();
 
-// 点击单张卡片翻面（切换 back 类）
-div.onclick = () => {
-div.classList.toggle("back");
-};
+function initGame() {
+  document.getElementById("poemTitle").textContent = poemData.title;
+  document.getElementById("poemMeta").textContent =
+    poemData.dynasty + " · " + poemData.author;
 
-grid.appendChild(div);
-cards.push(div);
+  const grid = document.getElementById("cardGrid");
+  grid.innerHTML = "";
+  window.cards = [];
+
+  for (const word of poemData.contentWords) {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.textContent = word;
+    div.onclick = () => div.classList.toggle("back");
+    grid.appendChild(div);
+    window.cards.push(div);
+  }
 }
 
-/* 翻整行 */
 function flipRow(row) {
-for (let col = 0; col < 5; col++) {
-cards[row * 5 + col].classList.toggle("back");
-}
+  for (let col = 0; col < 5; col++) {
+    window.cards[row * 5 + col].classList.toggle("back");
+  }
 }
 
-/* 翻整列 */
 function flipCol(col) {
-for (let row = 0; row < 4; row++) {
-cards[row * 5 + col].classList.toggle("back");
-}
+  for (let row = 0; row < 4; row++) {
+    window.cards[row * 5 + col].classList.toggle("back");
+  }
 }
 
-/* 还原按钮 */
+// ===== 按钮功能 =====
+document.getElementById("homeBtn").onclick = () => {
+  window.location.href = "index.html"; 
+  window.close();
+};
+
 document.getElementById("resetBtn").onclick = () => {
-cards.forEach(c => c.classList.remove("back"));
-// 取消正在朗读（如果有）
-if (window.speechSynthesis) window.speechSynthesis.cancel();
+  window.cards.forEach(c => c.classList.remove("back"));
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 };
 
-/* 朗读功能(完全使用第一个原程序的逻辑和参数，即：每正面字发音1s，背面等待1s) */
-document.getElementById("readBtn").onclick = () => {
-readCards();
-};
+document.getElementById("readBtn").onclick = () => readCards();
 
 function readCards() {
-const synth = window.speechSynthesis;
-synth.cancel();
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  let index = 0;
 
-let index = 0;
+  function speakNext() {
+    if (index >= window.cards.length) return;
 
-function speakNext() {
-if (index >= cards.length) return;
+    let card = window.cards[index];
+    let text = card.classList.contains("back") ? "" : card.textContent;
 
-let card = cards[index];
-let text = card.classList.contains("back") ? "" : card.textContent;
+    if (text !== "") {
+      let utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "zh-CN";
+      utter.rate = 1;
 
-if (text !== "") {
-// 正面：发音
-let utter = new SpeechSynthesisUtterance(text);
-utter.lang = "zh-CN";
-utter.rate = 1;
+      utter.onend = () => {
+        index++;
+        setTimeout(speakNext, 0);
+      };
 
-utter.onend = () => {
-index++;
-setTimeout(speakNext, 0); // 下一个
-};
-
-synth.speak(utter);
-} else {
-// 背面：停 1 秒
-setTimeout(() => {
-index++;
-speakNext();
-}, 500);
-}
-}
-
-speakNext();
+      synth.speak(utter);
+    } else {
+      setTimeout(() => {
+        index++;
+        speakNext();
+      }, 800);
+    }
+  }
+  speakNext();
 }
 
-/* 可选：空格触发朗读，R 还原 */
+// ====== 键盘操作 ======
 document.addEventListener("keydown", (e) => {
-if (e.code === "Space") {
-e.preventDefault();
-readCards();
-} else if (e.key.toLowerCase() === "r") {
-document.getElementById("resetBtn").click();
-}
+  if (e.code === "Space") {
+    e.preventDefault();
+    readCards();
+  } else if (e.key.toLowerCase() === "r") {
+    document.getElementById("resetBtn").click();
+  }
 });
 
-// Service Worker 注册代码，写在底部紧闭body前
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(registration => {
-      console.log('ServiceWorker registered with scope:', registration.scope);
-    }).catch(err => {
-      console.error('ServiceWorker registration failed:', err);
-    });
+// ====== PWA: 注册服务工作者 ======
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
   });
- }
+}
 </script>
 
 </body>
 </html>
-
-

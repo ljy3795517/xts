@@ -1,318 +1,107 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-
 <meta charset="UTF-8" />
-<title>诗词翻牌游戏 - 静夜思</title>
+<title>唐诗学习大树</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: url("tree.png") no-repeat center center fixed;
+  background-size: cover;
+  font-family: "PingFang SC", "Microsoft YaHei";
+}
+
+/* 苹果按钮：圆形 + 苹果图案 + 阴影 + 动画 */
+.circle-btn {
+  width: 90px;
+  height: 90px;
+  background: url("apple.png") no-repeat center center;
+  background-size: 100% 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  /* 按钮发光边缘 ———— 改成绿色 */
+  box-shadow: 0 0 18px rgba(0, 255, 0, 0.6);
+
+  /* 数字美化 */
+  font-size: 34px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(0,0,0,0.8);
+
+  position: absolute;
+  transition: transform 0.25s ease, box-shadow 0.2s ease;
+}
+
+.circle-btn:hover {
+  transform: scale(1.15);
+
+  /* 悬停发光也改成绿色 */
+  box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
+}
+
+/* 按钮位置（可随意调整） */
+#btn1 { top: 48%; left: 42%; }
+#btn2 { top: 38%; left: 55%; }
+#btn3 { top: 60%; left: 60%; }
+#btn4 { top: 30%; left: 30%; }
+#btn5 { top: 20%; left: 50%; }
+#btn6 { top: 65%; left: 35%; }
+#btn7 { top: 50%; left: 70%; }
+
+/* 小屏幕适配 */
+@media (max-width: 720px) {
+  .circle-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 26px;
+  }
+}
+</style>
+</head>
+<meta charset="UTF-8" />
+<title>诗词翻牌游戏</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="静夜思翻牌游戏" />
+<meta name="apple-mobile-web-app-title" content="诗词翻牌游戏" />
 <meta name="theme-color" content="#eef2f3" />
 
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="manifest" href="manifest.json" />
 
 
-
-<style>
-body {
-margin: 0;
-padding: 0;
-background: #eef2f3;
-font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-display: flex;
-flex-direction: column;
-align-items: center;
-}
-
-.top-area {
-text-align: center;
-padding: 15px 0 10px 0;
-}
-
-.title {
-font-size: 36px;
-font-weight: bold;
-}
-
-/* 基础炮按钮 */
-.icon-btn {
-width: 80px;
-height: 80px;
-padding: 0;
-border: none;
-cursor: pointer;
-background: url("cannon.png") no-repeat center center / cover;
-border-radius: 50%;
-transition: transform 0.25s ease;
-}
-
-/* 行按钮鼠标经过 → 顺时针旋转 40° */
-.row-btn:hover {
-transform: rotate(40deg) scale(1.08);
-}
-
-/* 列按钮鼠标经过 → 顺时针旋转 130° */
-.col-btn:hover {
-transform: rotate(130deg) scale(1.08);
-}
-
-/* 还原按钮与朗读按钮样式 */
-.action-buttons {
-position: absolute;
-top: -60px;
-left: -110px;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-
-#resetBtn, #readBtn {
-width: 90px;
-height: 40px;
-border-radius: 8px;
-border: none;
-cursor: pointer;
-font-size: 16px;
-color: white;
-}
-
-#resetBtn { background: #e67e22; }
-#resetBtn:hover { background: #cf6f1d; }
-
-#readBtn { background: #4a90e2; }
-#readBtn:hover { background: #357ac8; }
-
-.game-area {
-display: flex;
-flex-direction: row;
-align-items: flex-start;
-margin-top: 30px;
-width: 100%;
-justify-content: center;
-}
-
-/* 行按钮区增加上方两个空行 */
-.row-buttons {
-display: grid;
-grid-template-rows: repeat(4, 1fr);
-margin-right: 10px;
-height: 55vh;
-align-items: center;
-margin-top: 40px; /* 两个空行的近似高度 */
-}
-
-.card-wrapper {
-position: relative;
-width: 80vw;
-max-width: 1200px;
-}
-
-.card-grid {
-display: grid;
-grid-template-columns: repeat(5, 1fr);
-grid-template-rows: repeat(4, 1fr);
-gap: 10px;
-width: 100%;
-height: 55vh;
-position: relative;
-}
-
-.card {
-display: flex;
-justify-content: center;
-align-items: center;
-font-size: 36px;
-font-weight: bold;
-border-radius: 12px;
-cursor: pointer;
-transition: 0.25s;
-background: #fff7cc;
-color: #003f8a; /* 深蓝色字体（或亮蓝） */
-box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-user-select: none;
-}
-
-.card.back {
-background: #4a90e2;
-color: transparent;
-}
-
-.col-buttons {
-position: absolute;
-top: -60px;
-left: 0;
-width: 100%;
-display: flex;
-justify-content: space-around;
-padding: 0 10px;
-}
-
-/* 小屏设备微调 */
-@media (max-width: 720px) {
-.icon-btn { width: 60px; height: 60px; }
-#resetBtn, #readBtn { width: 76px; height: 36px; font-size: 14px; }
-.card { font-size: 28px; }
-}
-</style>
-</head>
 <body>
 
-<div class="top-area">
-<div>
-<span class="title">静夜思</span>
-<span style="font-size:22px;color:#555;margin-left:12px;">唐 · 李白</span>
-</div>
-</div>
-
-<!-- 卡片区上方两个空行 -->
-<br><br>
-
-<div class="game-area">
-
-<!-- 行按钮（用 row-btn 类） -->
-<div class="row-buttons" aria-label="行按钮">
-<button class="icon-btn row-btn" onclick="flipRow(0)" title="翻第1行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(1)" title="翻第2行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(2)" title="翻第3行"></button>
-<button class="icon-btn row-btn" onclick="flipRow(3)" title="翻第4行"></button>
-</div>
-
-<div class="card-wrapper" aria-live="polite">
-
-<!-- 还原 & 朗读 按钮 -->
-<div class="action-buttons" role="toolbar" aria-label="操作按钮">
-<button id="resetBtn" title="全部还原">还原</button>
-<button id="readBtn" title="朗读当前卡片状态">朗读</button>
-</div>
-
-<!-- 列按钮（用 col-btn 类） -->
-<br><br>
-<div class="col-buttons" aria-label="列按钮">
-<button class="icon-btn col-btn" onclick="flipCol(0)" title="翻第1列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(1)" title="翻第2列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(2)" title="翻第3列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(3)" title="翻第4列"></button>
-<button class="icon-btn col-btn" onclick="flipCol(4)" title="翻第5列"></button>
-</div>
-
-<div class="card-grid" id="cardGrid" role="grid" aria-label="诗词卡片区"></div>
-</div>
-</div>
+<!-- 七个苹果按钮 -->
+<div id="btn1" class="circle-btn" onclick="go(1)">1</div>
+<div id="btn2" class="circle-btn" onclick="go(2)">2</div>
+<div id="btn3" class="circle-btn" onclick="go(3)">3</div>
+<div id="btn4" class="circle-btn" onclick="go(4)">4</div>
+<div id="btn5" class="circle-btn" onclick="go(5)">5</div>
+<div id="btn6" class="circle-btn" onclick="go(6)">6</div>
+<div id="btn7" class="circle-btn" onclick="go(7)">7</div>
 
 <script>
-/* 诗词字数组（20 字） */
-const poemText = [
-"床","前","明","月","光",
-"疑","是","地","上","霜",
-"举","头","望","明","月",
-"低","头","思","故","乡"
-];
-
-const grid = document.getElementById("cardGrid");
-let cards = [];
-
-/* 创建卡片并加入 DOM */
-for (let i = 0; i < 20; i++) {
-const div = document.createElement("div");
-div.className = "card";
-div.textContent = poemText[i];
-
-// 点击单张卡片翻面（切换 back 类）
-div.onclick = () => {
-div.classList.toggle("back");
-};
-
-grid.appendChild(div);
-cards.push(div);
+// 跳转 jour.html 并带 f=编号 参数
+function go(n){
+  window.location.href = "jour.html?f=" + n;
 }
 
-/* 翻整行 */
-function flipRow(row) {
-for (let col = 0; col < 5; col++) {
-cards[row * 5 + col].classList.toggle("back");
-}
-}
 
-/* 翻整列 */
-function flipCol(col) {
-for (let row = 0; row < 4; row++) {
-cards[row * 5 + col].classList.toggle("back");
-}
-}
-
-/* 还原按钮 */
-document.getElementById("resetBtn").onclick = () => {
-cards.forEach(c => c.classList.remove("back"));
-// 取消正在朗读（如果有）
-if (window.speechSynthesis) window.speechSynthesis.cancel();
-};
-
-/* 朗读功能(完全使用第一个原程序的逻辑和参数，即：每正面字发音1s，背面等待1s) */
-document.getElementById("readBtn").onclick = () => {
-readCards();
-};
-
-function readCards() {
-const synth = window.speechSynthesis;
-synth.cancel();
-
-let index = 0;
-
-function speakNext() {
-if (index >= cards.length) return;
-
-let card = cards[index];
-let text = card.classList.contains("back") ? "" : card.textContent;
-
-if (text !== "") {
-// 正面：发音
-let utter = new SpeechSynthesisUtterance(text);
-utter.lang = "zh-CN";
-utter.rate = 1;
-
-utter.onend = () => {
-index++;
-setTimeout(speakNext, 0); // 下一个
-};
-
-synth.speak(utter);
-} else {
-// 背面：停 1 秒
-setTimeout(() => {
-index++;
-speakNext();
-}, 500);
-}
-}
-
-speakNext();
-}
-
-/* 可选：空格触发朗读，R 还原 */
-document.addEventListener("keydown", (e) => {
-if (e.code === "Space") {
-e.preventDefault();
-readCards();
-} else if (e.key.toLowerCase() === "r") {
-document.getElementById("resetBtn").click();
-}
-});
-
-// Service Worker 注册代码，写在底部紧闭body前
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(registration => {
-      console.log('ServiceWorker registered with scope:', registration.scope);
-    }).catch(err => {
-      console.error('ServiceWorker registration failed:', err);
-    });
+// ====== PWA: 注册服务工作者 ======
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
   });
- }
+}
 </script>
 
 </body>
 </html>
-
-

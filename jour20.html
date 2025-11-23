@@ -13,7 +13,6 @@
 <link rel="manifest" href="manifest.json" />
 
 <style>
-/* 样式保持第二个程序 */
 body {
   margin: 0;
   padding: 0;
@@ -55,6 +54,21 @@ body {
   flex-direction: column;
   gap: 8px;
 }
+
+/* ★ 新增主页按钮样式 */
+#homeBtn {
+  width: 90px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  background: #27ae60;
+}
+#homeBtn:hover { background: #1f8a4d; }
+
+/* 原按钮 */
 #resetBtn, #readBtn {
   width: 90px;
   height: 40px;
@@ -68,6 +82,7 @@ body {
 #resetBtn:hover { background: #cf6f1d; }
 #readBtn { background: #4a90e2; }
 #readBtn:hover { background: #357ac8; }
+
 .game-area {
   display: flex;
   flex-direction: row;
@@ -96,7 +111,6 @@ body {
   gap: 10px;
   width: 100%;
   height: 55vh;
-  position: relative;
 }
 .card {
   display: flex;
@@ -127,7 +141,11 @@ body {
 }
 @media (max-width: 720px) {
   .icon-btn { width: 60px; height: 60px; }
-  #resetBtn, #readBtn { width: 76px; height: 36px; font-size: 14px; }
+  #resetBtn, #readBtn, #homeBtn {
+    width: 76px;
+    height: 36px;
+    font-size: 14px;
+  }
   .card { font-size: 28px; }
 }
 </style>
@@ -144,56 +162,52 @@ body {
 <br><br>
 
 <div class="game-area">
-  <div class="row-buttons" aria-label="行按钮">
-    <button class="icon-btn row-btn" onclick="flipRow(0)" title="翻第1行"></button>
-    <button class="icon-btn row-btn" onclick="flipRow(1)" title="翻第2行"></button>
-    <button class="icon-btn row-btn" onclick="flipRow(2)" title="翻第3行"></button>
-    <button class="icon-btn row-btn" onclick="flipRow(3)" title="翻第4行"></button>
+  <div class="row-buttons">
+    <button class="icon-btn row-btn" onclick="flipRow(0)"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(1)"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(2)"></button>
+    <button class="icon-btn row-btn" onclick="flipRow(3)"></button>
   </div>
 
-  <div class="card-wrapper" aria-live="polite">
-    <div class="action-buttons" role="toolbar" aria-label="操作按钮">
+  <div class="card-wrapper">
+    <div class="action-buttons">
+      <!-- ★ 新增主页按钮 -->
+      <button id="homeBtn" title="返回主页">主页</button>
+
       <button id="resetBtn" title="全部还原">还原</button>
-      <button id="readBtn" title="朗读当前卡片状态">朗读</button>
+      <button id="readBtn" title="朗读">朗读</button>
     </div>
 
     <br><br>
 
-    <div class="col-buttons" aria-label="列按钮">
-      <button class="icon-btn col-btn" onclick="flipCol(0)" title="翻第1列"></button>
-      <button class="icon-btn col-btn" onclick="flipCol(1)" title="翻第2列"></button>
-      <button class="icon-btn col-btn" onclick="flipCol(2)" title="翻第3列"></button>
-      <button class="icon-btn col-btn" onclick="flipCol(3)" title="翻第4列"></button>
-      <button class="icon-btn col-btn" onclick="flipCol(4)" title="翻第5列"></button>
+    <div class="col-buttons">
+      <button class="icon-btn col-btn" onclick="flipCol(0)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(1)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(2)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(3)"></button>
+      <button class="icon-btn col-btn" onclick="flipCol(4)"></button>
     </div>
 
-    <div class="card-grid" id="cardGrid" role="grid" aria-label="诗词卡片区"></div>
+    <div class="card-grid" id="cardGrid"></div>
   </div>
 </div>
 
 <script>
-// === 保留第一个程序的动态加载数据文件语句 ===
-// ---- 自动参数读取 ----
+// 动态加载数据文件
 const urlParams = new URLSearchParams(window.location.search);
-let f = urlParams.get("f") || "1";  // 默认 1
+let f = urlParams.get("f") || "1";
 let dataFile = f + ".js";
-// -----------------------
 
-
-
-//let dataFile = "3.js";
 let script = document.createElement("script");
 script.src = dataFile;
 document.body.appendChild(script);
 
-script.onload = () => {
-  initGame();
-};
+script.onload = () => initGame();
 
-// 第二个程序功能全部替代，用第一个数据
 function initGame() {
   document.getElementById("poemTitle").textContent = poemData.title;
-  document.getElementById("poemMeta").textContent = poemData.dynasty + " · " + poemData.author;
+  document.getElementById("poemMeta").textContent =
+    poemData.dynasty + " · " + poemData.author;
 
   const grid = document.getElementById("cardGrid");
   grid.innerHTML = "";
@@ -221,9 +235,15 @@ function flipCol(col) {
   }
 }
 
+// === 主页按钮 ===
+document.getElementById("homeBtn").onclick = () => {
+  window.location.href = "index.html";
+  window.close();
+};
+
 document.getElementById("resetBtn").onclick = () => {
   window.cards.forEach(c => c.classList.remove("back"));
-  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 };
 
 document.getElementById("readBtn").onclick = () => readCards();
@@ -234,52 +254,36 @@ function readCards() {
   let index = 0;
 
   function speakNext() {
-    if(index >= window.cards.length) return;
+    if (index >= window.cards.length) return;
 
     let card = window.cards[index];
     let text = card.classList.contains("back") ? "" : card.textContent;
 
-    if(text !== "") {
+    if (text !== "") {
       let utter = new SpeechSynthesisUtterance(text);
       utter.lang = "zh-CN";
       utter.rate = 1;
-
       utter.onend = () => {
         index++;
-        setTimeout(speakNext, 0);
+        speakNext();
       };
-
       synth.speak(utter);
     } else {
-      setTimeout(() => {
-        index++;
-        speakNext();
-      }, 1000);
+      index++;
+      speakNext();
     }
   }
   speakNext();
 }
 
-document.addEventListener("keydown", (e) => {
-  if(e.code === "Space") {
-    e.preventDefault();
-    readCards();
-  } else if(e.key.toLowerCase() === "r") {
-    document.getElementById("resetBtn").click();
-  }
-});
-
-// Service Worker 注册（可选）
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then(registration => {
-      console.log('ServiceWorker registered with scope:', registration.scope);
-    }).catch(err => {
-      console.error('ServiceWorker registration failed:', err);
-    });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
   });
 }
 </script>
 
 </body>
 </html>
+
+
