@@ -4,26 +4,53 @@
 <meta charset="UTF-8" />
 <title>唐诗学习大树</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="诗词翻牌游戏" />
+<meta name="theme-color" content="#eef2f3" />
+
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="manifest" href="manifest.json" />
 
 <style>
 body {
   margin: 0;
   padding: 0;
+  min-height: 100vh;
   background: url("tree.png") no-repeat center center fixed;
   background-size: cover;
-  font-family: "PingFang SC", "Microsoft YaHei";
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  overflow-x: hidden;
+}
+
+/* 单个号码与诗名同一行容器 */
+.poem-item {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+
+.poem-item:hover,
+.poem-item.active {
+  z-index: 30;
 }
 
 /* 苹果按钮：圆形 + 苹果图案 + 阴影 + 动画 */
 .circle-btn {
   width: 90px;
   height: 90px;
+  padding: 0;
+  border: none;
   background: url("apple.png") no-repeat center center;
   background-size: 100% 100%;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   cursor: pointer;
 
   /* 按钮发光边缘 ———— 改成绿色 */
@@ -35,70 +62,192 @@ body {
   color: #ffffff;
   text-shadow: 0 0 8px rgba(0,0,0,0.8);
 
-  position: absolute;
-  transition: transform 0.25s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.circle-btn:hover {
+.poem-item:hover .circle-btn,
+.poem-item.active .circle-btn,
+.circle-btn:focus-visible {
   transform: scale(1.15);
+  outline: none;
 
-  /* 悬停发光也改成绿色 */
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
+  /* 悬停或点击选中时点亮明亮光晕 */
+  box-shadow:
+    0 0 20px rgba(255, 255, 180, 0.95),
+    0 0 42px rgba(120, 255, 100, 0.95),
+    0 0 68px rgba(0, 255, 80, 0.8);
+}
+
+/* 并行显示在号码后面的诗名（与号码同一行） */
+.poem-title {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(18, 44, 24, 0.9);
+  color: #fffbe6;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid rgba(190, 255, 150, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 16px rgba(140, 255, 110, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-8px);
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+}
+
+.poem-item:hover .poem-title,
+.poem-item.active .poem-title {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.poem-title:hover {
+  background: rgba(28, 70, 36, 0.96);
 }
 
 /* 按钮位置（可随意调整） */
-#btn1 { top: 48%; left: 42%; }
-#btn2 { top: 38%; left: 55%; }
-#btn3 { top: 60%; left: 60%; }
-#btn4 { top: 30%; left: 30%; }
-#btn5 { top: 20%; left: 50%; }
-#btn6 { top: 65%; left: 35%; }
-#btn7 { top: 50%; left: 70%; }
+#btn1 { top: 48%; left: 40%; }
+#btn2 { top: 38%; left: 53%; }
+#btn3 { top: 60%; left: 56%; }
+#btn4 { top: 30%; left: 28%; }
+#btn5 { top: 20%; left: 48%; }
+#btn6 { top: 65%; left: 32%; }
+#btn7 { top: 50%; left: 66%; }
+#btn8 { top: 16%; left: 24%; }
+#btn9 { top: 24%; left: 64%; }
+#btn10 { top: 44%; left: 18%; }
+#btn11 { top: 35%; left: 67%; }
+#btn12 { top: 66%; left: 68%; }
 
 /* 小屏幕适配 */
 @media (max-width: 720px) {
-  .circle-btn {
-    width: 70px;
-    height: 70px;
-    font-size: 26px;
+  .poem-item {
+    gap: 8px;
   }
+  .circle-btn {
+    width: 66px;
+    height: 66px;
+    font-size: 24px;
+  }
+  .poem-title {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+  #btn3 { left: 46%; }
+  #btn7 { left: 56%; }
+  #btn9 { left: 56%; }
+  #btn11 { left: 52%; }
+  #btn12 { left: 54%; }
 }
 </style>
 </head>
-<meta charset="UTF-8" />
-<title>诗词翻牌游戏</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="诗词翻牌游戏" />
-<meta name="theme-color" content="#eef2f3" />
-
-<link rel="apple-touch-icon" href="icon-192.png" />
-<link rel="manifest" href="manifest.json" />
-
 
 <body>
 
-<!-- 七个苹果按钮 -->
-<div id="btn1" class="circle-btn" onclick="go(1)">1</div>
-<div id="btn2" class="circle-btn" onclick="go(2)">2</div>
-<div id="btn3" class="circle-btn" onclick="go(3)">3</div>
-<div id="btn4" class="circle-btn" onclick="go(4)">4</div>
-<div id="btn5" class="circle-btn" onclick="go(5)">5</div>
-<div id="btn6" class="circle-btn" onclick="go(6)">6</div>
-<div id="btn7" class="circle-btn" onclick="go(7)">7</div>
+<!-- 十二个苹果按钮 -->
+<div id="btn1" class="poem-item" data-id="1">
+  <button type="button" class="circle-btn">1</button>
+  <span class="poem-title">《静夜思》</span>
+</div>
+<div id="btn2" class="poem-item" data-id="2">
+  <button type="button" class="circle-btn">2</button>
+  <span class="poem-title">《易水送别》</span>
+</div>
+<div id="btn3" class="poem-item" data-id="3">
+  <button type="button" class="circle-btn">3</button>
+  <span class="poem-title">《赋得古原草送别》</span>
+</div>
+<div id="btn4" class="poem-item" data-id="4">
+  <button type="button" class="circle-btn">4</button>
+  <span class="poem-title">《登鹳雀楼》</span>
+</div>
+<div id="btn5" class="poem-item" data-id="5">
+  <button type="button" class="circle-btn">5</button>
+  <span class="poem-title">《鹿柴》</span>
+</div>
+<div id="btn6" class="poem-item" data-id="6">
+  <button type="button" class="circle-btn">6</button>
+  <span class="poem-title">《夜宿山寺》</span>
+</div>
+<div id="btn7" class="poem-item" data-id="7">
+  <button type="button" class="circle-btn">7</button>
+  <span class="poem-title">《鸟鸣涧》</span>
+</div>
+<div id="btn8" class="poem-item" data-id="8">
+  <button type="button" class="circle-btn">8</button>
+  <span class="poem-title">《画》</span>
+</div>
+<div id="btn9" class="poem-item" data-id="9">
+  <button type="button" class="circle-btn">9</button>
+  <span class="poem-title">《悯农》</span>
+</div>
+<div id="btn10" class="poem-item" data-id="10">
+  <button type="button" class="circle-btn">10</button>
+  <span class="poem-title">《古朗月行》</span>
+</div>
+<div id="btn11" class="poem-item" data-id="11">
+  <button type="button" class="circle-btn">11</button>
+  <span class="poem-title">《寻隐者不遇》</span>
+</div>
+<div id="btn12" class="poem-item" data-id="12">
+  <button type="button" class="circle-btn">12</button>
+  <span class="poem-title">《问刘十九》</span>
+</div>
 
 <script>
 // 跳转 jour.html 并带 f=编号 参数
-function go(n){
+function go(n) {
   window.location.href = "jour.html?f=" + n;
 }
 
+const items = document.querySelectorAll(".poem-item");
+
+items.forEach((item) => {
+  const id = item.dataset.id;
+  const btn = item.querySelector(".circle-btn");
+  const title = item.querySelector(".poem-title");
+
+  // 第一次点击点亮光晕并在同行右侧显示诗名；再次点击或点击诗名进入背诵页
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (item.classList.contains("active")) {
+      go(id);
+      return;
+    }
+    items.forEach((other) => other.classList.remove("active"));
+    item.classList.add("active");
+  });
+
+  title.addEventListener("click", (e) => {
+    e.stopPropagation();
+    go(id);
+  });
+});
+
+// 点击空白处收起当前选中诗名
+document.addEventListener("click", () => {
+  items.forEach((item) => item.classList.remove("active"));
+});
 
 // ====== PWA: 注册服务工作者 ======
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (hadController && !refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+    navigator.serviceWorker.register("./sw.js").then((reg) => {
+      reg.update();
+    });
   });
 }
 </script>
