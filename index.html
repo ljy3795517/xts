@@ -13,6 +13,10 @@
 <link rel="manifest" href="manifest.json" />
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -23,25 +27,46 @@ body {
   overflow-x: hidden;
 }
 
+/* 树冠上的有序按钮区（按 2-3-4-3 树冠形态排列，避免任何屏幕重叠） */
+.tree-canopy {
+  position: absolute;
+  top: 13vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92vw, 760px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 3.2vh, 34px);
+}
+
+.canopy-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(28px, 4.5vw, 56px);
+}
+
 /* 单个号码与诗名同一行容器 */
 .poem-item {
-  position: absolute;
+  position: relative;
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
+  flex-shrink: 0;
   z-index: 1;
+  transform: translateX(var(--shift-x, 0px));
+  transition: transform 0.22s ease;
 }
 
-.poem-item:hover,
 .poem-item.active {
-  z-index: 30;
+  z-index: 50;
 }
 
 /* 苹果按钮：圆形 + 苹果图案 + 阴影 + 动画 */
 .circle-btn {
-  width: 90px;
-  height: 90px;
+  width: 86px;
+  height: 86px;
   padding: 0;
   border: none;
   background: url("apple.png") no-repeat center center;
@@ -57,7 +82,7 @@ body {
   box-shadow: 0 0 18px rgba(0, 255, 0, 0.6);
 
   /* 数字美化 */
-  font-size: 34px;
+  font-size: 32px;
   font-weight: bold;
   color: #ffffff;
   text-shadow: 0 0 8px rgba(0,0,0,0.8);
@@ -65,24 +90,27 @@ body {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.poem-item:hover .circle-btn,
 .poem-item.active .circle-btn,
 .circle-btn:focus-visible {
-  transform: scale(1.15);
+  transform: scale(1.14);
   outline: none;
 
-  /* 悬停或点击选中时点亮明亮光晕 */
+  /* 选中时点亮明亮光晕 */
   box-shadow:
     0 0 20px rgba(255, 255, 180, 0.95),
     0 0 42px rgba(120, 255, 100, 0.95),
     0 0 68px rgba(0, 255, 80, 0.8);
 }
 
-/* 并行显示在号码后面的诗名（与号码同一行） */
+/* 并行显示在号码后面的诗名（与号码在同一行） */
 .poem-title {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
   padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(18, 44, 24, 0.9);
+  background: rgba(18, 44, 24, 0.92);
   color: #fffbe6;
   font-size: 18px;
   font-weight: 600;
@@ -94,109 +122,149 @@ body {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateX(-8px);
   transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
 }
 
-.poem-item:hover .poem-title,
 .poem-item.active .poem-title {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateX(0);
+  transform: translateY(-50%) translateX(0);
 }
 
-.poem-title:hover {
-  background: rgba(28, 70, 36, 0.96);
+/* 仅在支持鼠标悬停的设备上启用 hover，避免手机触屏黏滞 */
+@media (hover: hover) {
+  .poem-item:hover {
+    z-index: 50;
+  }
+  .poem-item:hover .circle-btn {
+    transform: scale(1.14);
+    box-shadow:
+      0 0 20px rgba(255, 255, 180, 0.95),
+      0 0 42px rgba(120, 255, 100, 0.95),
+      0 0 68px rgba(0, 255, 80, 0.8);
+  }
+  .poem-item:hover .poem-title {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+  .poem-title:hover {
+    background: rgba(28, 70, 36, 0.98);
+  }
 }
 
-/* 按钮位置（可随意调整） */
-#btn1 { top: 48%; left: 40%; }
-#btn2 { top: 38%; left: 53%; }
-#btn3 { top: 60%; left: 56%; }
-#btn4 { top: 30%; left: 28%; }
-#btn5 { top: 20%; left: 48%; }
-#btn6 { top: 65%; left: 32%; }
-#btn7 { top: 50%; left: 66%; }
-#btn8 { top: 16%; left: 24%; }
-#btn9 { top: 24%; left: 64%; }
-#btn10 { top: 44%; left: 18%; }
-#btn11 { top: 35%; left: 67%; }
-#btn12 { top: 66%; left: 68%; }
-
-/* 小屏幕适配 */
+/* 手机竖屏适配 */
 @media (max-width: 720px) {
-  .poem-item {
-    gap: 8px;
+  .tree-canopy {
+    top: 12vh;
+    width: 96vw;
+    gap: clamp(16px, 3.4vh, 26px);
+  }
+  .canopy-row {
+    gap: clamp(14px, 4vw, 24px);
   }
   .circle-btn {
-    width: 66px;
-    height: 66px;
-    font-size: 24px;
+    width: clamp(54px, 14.5vw, 68px);
+    height: clamp(54px, 14.5vw, 68px);
+    font-size: clamp(20px, 5.5vw, 26px);
+  }
+  .poem-title {
+    left: calc(100% + 8px);
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+}
+
+/* 手机横屏等较矮视口适配 */
+@media (max-height: 520px) {
+  .tree-canopy {
+    top: 8vh;
+    gap: 10px;
+  }
+  .canopy-row {
+    gap: 18px;
+  }
+  .circle-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
   }
   .poem-title {
     font-size: 14px;
     padding: 5px 10px;
   }
-  #btn3 { left: 46%; }
-  #btn7 { left: 56%; }
-  #btn9 { left: 56%; }
-  #btn11 { left: 52%; }
-  #btn12 { left: 54%; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 十二个苹果按钮 -->
-<div id="btn1" class="poem-item" data-id="1">
-  <button type="button" class="circle-btn">1</button>
-  <span class="poem-title">《静夜思》</span>
-</div>
-<div id="btn2" class="poem-item" data-id="2">
-  <button type="button" class="circle-btn">2</button>
-  <span class="poem-title">《易水送别》</span>
-</div>
-<div id="btn3" class="poem-item" data-id="3">
-  <button type="button" class="circle-btn">3</button>
-  <span class="poem-title">《赋得古原草送别》</span>
-</div>
-<div id="btn4" class="poem-item" data-id="4">
-  <button type="button" class="circle-btn">4</button>
-  <span class="poem-title">《登鹳雀楼》</span>
-</div>
-<div id="btn5" class="poem-item" data-id="5">
-  <button type="button" class="circle-btn">5</button>
-  <span class="poem-title">《鹿柴》</span>
-</div>
-<div id="btn6" class="poem-item" data-id="6">
-  <button type="button" class="circle-btn">6</button>
-  <span class="poem-title">《夜宿山寺》</span>
-</div>
-<div id="btn7" class="poem-item" data-id="7">
-  <button type="button" class="circle-btn">7</button>
-  <span class="poem-title">《鸟鸣涧》</span>
-</div>
-<div id="btn8" class="poem-item" data-id="8">
-  <button type="button" class="circle-btn">8</button>
-  <span class="poem-title">《画》</span>
-</div>
-<div id="btn9" class="poem-item" data-id="9">
-  <button type="button" class="circle-btn">9</button>
-  <span class="poem-title">《悯农》</span>
-</div>
-<div id="btn10" class="poem-item" data-id="10">
-  <button type="button" class="circle-btn">10</button>
-  <span class="poem-title">《古朗月行》</span>
-</div>
-<div id="btn11" class="poem-item" data-id="11">
-  <button type="button" class="circle-btn">11</button>
-  <span class="poem-title">《寻隐者不遇》</span>
-</div>
-<div id="btn12" class="poem-item" data-id="12">
-  <button type="button" class="circle-btn">12</button>
-  <span class="poem-title">《问刘十九》</span>
+<div class="tree-canopy">
+  <!-- 第 1 行：树冠顶部 -->
+  <div class="canopy-row">
+    <div id="btn1" class="poem-item" data-id="1">
+      <button type="button" class="circle-btn">1</button>
+      <span class="poem-title">《静夜思》</span>
+    </div>
+    <div id="btn2" class="poem-item" data-id="2">
+      <button type="button" class="circle-btn">2</button>
+      <span class="poem-title">《易水送别》</span>
+    </div>
+  </div>
+
+  <!-- 第 2 行：树冠中上部 -->
+  <div class="canopy-row">
+    <div id="btn3" class="poem-item" data-id="3">
+      <button type="button" class="circle-btn">3</button>
+      <span class="poem-title">《赋得古原草送别》</span>
+    </div>
+    <div id="btn4" class="poem-item" data-id="4">
+      <button type="button" class="circle-btn">4</button>
+      <span class="poem-title">《登鹳雀楼》</span>
+    </div>
+    <div id="btn5" class="poem-item" data-id="5">
+      <button type="button" class="circle-btn">5</button>
+      <span class="poem-title">《鹿柴》</span>
+    </div>
+  </div>
+
+  <!-- 第 3 行：树冠中部（最宽） -->
+  <div class="canopy-row">
+    <div id="btn6" class="poem-item" data-id="6">
+      <button type="button" class="circle-btn">6</button>
+      <span class="poem-title">《夜宿山寺》</span>
+    </div>
+    <div id="btn7" class="poem-item" data-id="7">
+      <button type="button" class="circle-btn">7</button>
+      <span class="poem-title">《鸟鸣涧》</span>
+    </div>
+    <div id="btn8" class="poem-item" data-id="8">
+      <button type="button" class="circle-btn">8</button>
+      <span class="poem-title">《画》</span>
+    </div>
+    <div id="btn9" class="poem-item" data-id="9">
+      <button type="button" class="circle-btn">9</button>
+      <span class="poem-title">《悯农》</span>
+    </div>
+  </div>
+
+  <!-- 第 4 行：树冠下部 -->
+  <div class="canopy-row">
+    <div id="btn10" class="poem-item" data-id="10">
+      <button type="button" class="circle-btn">10</button>
+      <span class="poem-title">《古朗月行》</span>
+    </div>
+    <div id="btn11" class="poem-item" data-id="11">
+      <button type="button" class="circle-btn">11</button>
+      <span class="poem-title">《寻隐者不遇》</span>
+    </div>
+    <div id="btn12" class="poem-item" data-id="12">
+      <button type="button" class="circle-btn">12</button>
+      <span class="poem-title">《问刘十九》</span>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -206,6 +274,25 @@ function go(n) {
 }
 
 const items = document.querySelectorAll(".poem-item");
+
+// 若右侧诗名超出屏幕右边缘，将“号码+诗名”整体向左微调以保持在同一行且完整可见
+function fitTitleInViewport(item) {
+  item.style.setProperty("--shift-x", "0px");
+  const title = item.querySelector(".poem-title");
+  const rect = title.getBoundingClientRect();
+  const margin = 12;
+  if (rect.right > window.innerWidth - margin) {
+    const overflow = Math.ceil(rect.right - (window.innerWidth - margin));
+    item.style.setProperty("--shift-x", -overflow + "px");
+  }
+}
+
+function clearActive() {
+  items.forEach((other) => {
+    other.classList.remove("active");
+    other.style.setProperty("--shift-x", "0px");
+  });
+}
 
 items.forEach((item) => {
   const id = item.dataset.id;
@@ -219,8 +306,19 @@ items.forEach((item) => {
       go(id);
       return;
     }
-    items.forEach((other) => other.classList.remove("active"));
+    clearActive();
     item.classList.add("active");
+    fitTitleInViewport(item);
+  });
+
+  item.addEventListener("mouseenter", () => {
+    fitTitleInViewport(item);
+  });
+
+  item.addEventListener("mouseleave", () => {
+    if (!item.classList.contains("active")) {
+      item.style.setProperty("--shift-x", "0px");
+    }
   });
 
   title.addEventListener("click", (e) => {
@@ -230,8 +328,10 @@ items.forEach((item) => {
 });
 
 // 点击空白处收起当前选中诗名
-document.addEventListener("click", () => {
-  items.forEach((item) => item.classList.remove("active"));
+document.addEventListener("click", clearActive);
+window.addEventListener("resize", () => {
+  const activeItem = document.querySelector(".poem-item.active");
+  if (activeItem) fitTitleInViewport(activeItem);
 });
 
 // ====== PWA: 注册服务工作者 ======
